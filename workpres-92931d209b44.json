@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "workpres",
+  "private_key_id": "92931d209b449832c2f42d5a6838bcfc8c3233ff",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCYTGYYl/Tcvz40\nMmmpvzvPa293amgIYh02z/o5v4gotZTvPL4pc/FyLk97C9Thm+YouvyFSTSlqC+H\nGKfP9qniCiEURXXG3v3/5ZEoZzzIgY8D9JSZddf8C8ESOn60NCG9Dbrqx/GhxCNW\nqucLs63FWMQ3IU9Jt1ehfIb+NDzRsG9oE2xWrodBskIM5uJVxHr0+cfQP6F+aNzi\n3A587d1BSMgA9bEJIs3pObplu+FW9ErFwa8T6qNqKvsGJrkdx+pl+x7E6zZVRjtI\nV2So5Q5YHd4A6gNIphxuUxPcqbBB9cP66Hby9vONP2ShKR0rvFfdCS4Gf1oqZ880\nfV1s18g7AgMBAAECggEAQe6xNGx0oSxZ7Zb1j3sulXlZZEU4jIiNRTF8jouQkq8p\nrviJCsEbAedymT5iBtnLJk7tC3bJx/2rtbzCyZFrsmPYNkJr3pCjPalQ0kD/W35b\nP8ceneEahA9ConWYbMM05/eNuB6fSPz0n4yVQcejrw/iwks1XCB3W33hoyNSQSSJ\nkNAMW6blrdI7FDBHRBmNuYtbXfehjjVZEHzM9tpDQe+6BuahF2u48l9XSlZXmLOk\nf6jGggGgLDXpFL27rjrejRJhuot1uwJa/NoFozVgqYNtgyORPbVaLJOAdQ8UQwoA\nTLPrgaa/iBnTN/tKsLSb06E3ZGFDW88v0Ap+dnMZAQKBgQDRpLdemqTLxQ+MROYh\n+0C/fhy6doUoZ/W77hXxsijuGu4O40hw/4eIkjTjhMgPY2oCMkAlg5GfPQKPhAcQ\nJ1jP158zsqWmX2GBRkxUt7JyDPmxy/QRTB2PDPIVYnwTx+9FDdUeqPO/ScZQife+\nVL2e6BRh/jdFlY2WQ7RPjnAhIQKBgQC5+Y4aQtkaw1cpXKKg6gI3zyJy3XkUKHgw\nK53kmZ56LJJE1xM1u5rDIzA09IkdbZwjXylF5woQSWYpXS0eVXokDH3tey4i3lMd\nH6ElZ+B3aubAxi9T9upvQyeieVDu7XaH9fPDNx24lkFuTdl2aGpqfam8ELieC8CZ\nvv5pWnBR2wKBgERfUiaajPCgPmfi+KNQjFdny/rMOLVq4mv+RE3law/s3IMigTfJ\nPuy9sl4Zqh3KsIIy3VTeyhmDDli8GImeK4rtqdB0jS3roaNFyBNBLgOgU7c260zQ\n5DsJX9K1of3ZkSGWV1F+jLBwYStXM+NxQ76VtkAXZvNcySaewinILK3BAoGABlkT\nVagkevph9kJ4Np/mNXt3hI40vNBo0dQbTptDwo3U7E6fFD10GecQlS4no/6Czt5H\nrWAmgsnOl+jbSmbGhYZ7oeiLeZs3IQ5cVMeH7OuUNs5M/UO3Wtbi+nPDpHQskJV/\nnZE7DXrrftVfb+A+iaYCbi3v700dZOIVEwmIPfMCgYAr8h6nDigE0CL2W1vfJofD\nqMRMH/PNI+Hci+3N2J2w7BqZHEc7dqaI+p2JqkHNxLSo2w2AJ8fi1yc6QOoc3dPf\nuFYAmTbnVcUpbVgL+krcTxdQVYaEqhEta3X1qJzKNt1GWxG14jtsL4wB+gh6Xo6H\nWnxu1QNgR/+r5hQYEwgjbA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "workpres@workpres.iam.gserviceaccount.com",
+  "client_id": "107166973864085723411",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/workpres%40workpres.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
