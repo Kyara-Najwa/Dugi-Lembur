@@ -72,5 +72,3 @@ namespace Mobile.Controllers
 
     }
 }
-
-//ledyy test
