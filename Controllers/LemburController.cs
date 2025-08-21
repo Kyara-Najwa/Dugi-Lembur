@@ -91,7 +91,6 @@ namespace Mobile.Controllers
             
             return CreatedAtAction(nameof(GetById), new { id = newId }, lembur);
         }
-
         [HttpPut("approval/{id}")]
         public async Task<IActionResult> Approve(int id, [FromBody] Lembur lembur)
         {
@@ -127,7 +126,7 @@ namespace Mobile.Controllers
             //untuk cek apakah karyawan punya role admin ( admin = 1 )
             if (employeeRoleId != 1)
             {
-                return BadRequest("Only administrators can approve overtime requests");
+                return BadRequest("Only administrators can update overtime request status");
             }
             
             lembur.Id = id;
@@ -145,13 +144,38 @@ namespace Mobile.Controllers
             lembur.Alasan = exists.Alasan;
             lembur.DateCreated = exists.DateCreated;
             
-            //untuk set status lembur
-            lembur.ApprovedBy = employeeId;
-            lembur.ApprovedAt = DateTime.UtcNow;
+            //untuk set status lembur berdasarkan nilai status yang dikirim
+            var currentTime = DateTime.UtcNow;
+            
+            switch (lembur.Status)
+            {
+                case LemburStatus.Approved:
+                    lembur.ApprovedBy = employeeId;
+                    lembur.ApprovedAt = currentTime;
+                    lembur.RejectedBy = null;
+                    lembur.RejectedAt = null;
+                    break;
+                    
+                case LemburStatus.Rejected:
+                    lembur.RejectedBy = employeeId;
+                    lembur.RejectedAt = currentTime;
+                    lembur.ApprovedBy = null;
+                    lembur.ApprovedAt = null;
+                    break;
+                    
+                default:
+                    //untuk status pending atau lainnya, clear both approved dan rejected fields
+                    lembur.ApprovedBy = null;
+                    lembur.ApprovedAt = null;
+                    lembur.RejectedBy = null;
+                    lembur.RejectedAt = null;
+                    break;
+            }
             
             await _lemburService.Update(lembur);
             return NoContent();
         }
+
         
         [HttpPut("reject/{id}")]
         public async Task<IActionResult> Reject(int id, [FromBody] RejectLemburRequest request)
@@ -207,13 +231,36 @@ namespace Mobile.Controllers
                 Alasan = exists.Alasan,
                 DateCreated = exists.DateCreated,
                 Status = LemburStatus.Rejected,
-                ApprovedBy = employeeId,
-                ApprovedAt = DateTime.UtcNow,
+                RejectedBy = employeeId,
+                RejectedAt = DateTime.UtcNow,
                 RejectReason = request.RejectReason
             };
             
             await _lemburService.Update(lembur);
             return NoContent();
+        }
+        
+        [HttpPost("filter")]
+        public async Task<IActionResult> GetFilteredLembur([FromBody] LemburFilterRequest request)
+        {
+            if (request == null)
+            {
+                return BadRequest("Request cannot be null");
+            }
+            
+            //untuk validasi model
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            //untuk memastikan request.EmployeeId dan request.Status tidak null
+            Console.WriteLine($"Request - EmployeeId: {request.EmployeeId} (Type: {request.EmployeeId.GetType()})");
+            Console.WriteLine($"Request - Status: {request.Status} (Type: {request.Status.GetType()})");
+            Console.WriteLine($"Request - CompanyId: {request.CompanyId} (Type: {request.CompanyId.GetType()})");
+            
+            var result = await _lemburService.GetFilteredLembur(request);
+            return Ok(result);
         }
     }
 }
