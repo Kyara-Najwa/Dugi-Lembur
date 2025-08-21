@@ -185,7 +185,7 @@ namespace Mobile.Controllers
                 return BadRequest("Unable to find employee with email: " + employeeEmailClaim);
             }
             
-            //untuk cek apakah karyawan punya role admin ( admin = 1 )
+            //untuk cek apakah karyawan punya role admin ( admin = 1 ) testes
             if (employeeRoleId != 1)
             {
                 return BadRequest("Only administrators can reject overtime requests");
