@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Mobile.Services;
 using Mobile.Model;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace Mobile.Controllers
 {
@@ -35,12 +38,53 @@ namespace Mobile.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Lembur lembur)
+        public async Task<IActionResult> Create([FromBody] CreateLemburRequest request)
         {
-            if (lembur == null)
+            if (request == null)
             {
                 return BadRequest();
             }
+            
+            //untuk validasi model
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            //ini untuk mendapatkan email karyawan dri token Jwt
+            var employeeEmailClaim = User.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+            
+            //kalau misal ngga ditemukan, coba ambil dari claim lain
+            //yang umum digunakan untuk email
+            if (string.IsNullOrEmpty(employeeEmailClaim))
+            {
+                employeeEmailClaim = User.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
+            }
+            
+            //kalau emailnya kosong, return error
+            //untuk memastikan bisa dapetin employeeId dari email
+            if (string.IsNullOrEmpty(employeeEmailClaim))
+            {
+                return BadRequest("Unable to extract employee email from token");
+            }
+            
+            //untuk mendapatkan employeeId berdasarkan email
+            var employeeId = await _lemburService.GetEmployeeIdByEmail(employeeEmailClaim);
+            if (employeeId <= 0)
+            {
+                return BadRequest("Unable to find employee with email: " + employeeEmailClaim);
+            }
+            
+            //untuk buat lembur baru
+            var lembur = new Lembur
+            {
+                EmployeeId = employeeId,
+                TanggalLembur = request.TanggalLembur,
+                Durasi = request.Durasi,
+                Alasan = request.Alasan,
+                Status = LemburStatus.Pending, //default status
+                DateCreated = DateTime.UtcNow //set tanggal dibuat
+            };
             
             var newId = await _lemburService.Create(lembur);
             lembur.Id = newId;
@@ -48,13 +92,45 @@ namespace Mobile.Controllers
             return CreatedAtAction(nameof(GetById), new { id = newId }, lembur);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Lembur lembur)
+        [HttpPut("approval/{id}")]
+        public async Task<IActionResult> Approve(int id, [FromBody] Lembur lembur)
         {
-            if (lembur == null || id != lembur.Id)
+            if (lembur == null)
             {
                 return BadRequest();
             }
+            
+            //ini untuk mendapatkan email karyawan dri token Jwt
+            var employeeEmailClaim = User.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+            
+            //kalau misal ngga ditemukan, coba ambil dari claim lain
+            //yang umum digunakan untuk email
+            if (string.IsNullOrEmpty(employeeEmailClaim))
+            {
+                employeeEmailClaim = User.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
+            }
+            
+            //kalau emailnya kosong, return error
+            //untuk memastikan bisa dapetin employeeId dari email
+            if (string.IsNullOrEmpty(employeeEmailClaim))
+            {
+                return BadRequest("Unable to extract employee email from token");
+            }
+            
+            //untuk mendapatkan employeeId berdasarkan email
+            var (employeeId, employeeRoleId) = await _lemburService.GetEmployeeInfoByEmail(employeeEmailClaim);
+            if (employeeId <= 0)
+            {
+                return BadRequest("Unable to find employee with email: " + employeeEmailClaim);
+            }
+            
+            //untuk cek apakah karyawan punya role admin ( admin = 1 )
+            if (employeeRoleId != 1)
+            {
+                return BadRequest("Only administrators can approve overtime requests");
+            }
+            
+            lembur.Id = id;
             
             var exists = await _lemburService.GetById(id);
             if (exists == null)
@@ -62,6 +138,80 @@ namespace Mobile.Controllers
                 return NotFound();
             }
 
+            //yang gabole diubah
+            lembur.EmployeeId = exists.EmployeeId;
+            lembur.TanggalLembur = exists.TanggalLembur;
+            lembur.Durasi = exists.Durasi;
+            lembur.Alasan = exists.Alasan;
+            lembur.DateCreated = exists.DateCreated;
+            
+            //untuk set status lembur
+            lembur.ApprovedBy = employeeId;
+            lembur.ApprovedAt = DateTime.UtcNow;
+            
+            await _lemburService.Update(lembur);
+            return NoContent();
+        }
+        
+        [HttpPut("reject/{id}")]
+        public async Task<IActionResult> Reject(int id, [FromBody] RejectLemburRequest request)
+        {
+            if (request == null)
+            {
+                return BadRequest();
+            }
+            
+            //ini untuk mendapatkan email karyawan dri token Jwt
+            var employeeEmailClaim = User.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+            
+            //kalau misal ngga ditemukan, coba ambil dari claim lain
+            //yang umum digunakan untuk email
+            if (string.IsNullOrEmpty(employeeEmailClaim))
+            {
+                employeeEmailClaim = User.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
+            }
+            
+            //kalau emailnya kosong, return error
+            //untuk memastikan bisa dapetin employeeId dari email
+            if (string.IsNullOrEmpty(employeeEmailClaim))
+            {
+                return BadRequest("Unable to extract employee email from token");
+            }
+            
+            //untuk mendapatkan employeeId berdasarkan email
+            var (employeeId, employeeRoleId) = await _lemburService.GetEmployeeInfoByEmail(employeeEmailClaim);
+            if (employeeId <= 0)
+            {
+                return BadRequest("Unable to find employee with email: " + employeeEmailClaim);
+            }
+            
+            //untuk cek apakah karyawan punya role admin ( admin = 1 )
+            if (employeeRoleId != 1)
+            {
+                return BadRequest("Only administrators can reject overtime requests");
+            }
+            
+            var exists = await _lemburService.GetById(id);
+            if (exists == null)
+            {
+                return NotFound();
+            }
+            
+            // membuat lembur dengan alasan penolakannya
+            var lembur = new Lembur
+            {
+                Id = id,
+                EmployeeId = exists.EmployeeId,
+                TanggalLembur = exists.TanggalLembur,
+                Durasi = exists.Durasi,
+                Alasan = exists.Alasan,
+                DateCreated = exists.DateCreated,
+                Status = LemburStatus.Rejected,
+                ApprovedBy = employeeId,
+                ApprovedAt = DateTime.UtcNow,
+                RejectReason = request.RejectReason
+            };
+            
             await _lemburService.Update(lembur);
             return NoContent();
         }
