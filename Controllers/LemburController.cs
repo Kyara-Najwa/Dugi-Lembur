@@ -240,7 +240,7 @@ namespace Mobile.Controllers
             return NoContent();
         }
         
-        [HttpPost("filter")]
+        [HttpPost("list")]
         public async Task<IActionResult> GetFilteredLembur([FromBody] LemburFilterRequest request)
         {
             if (request == null)
