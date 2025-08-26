@@ -132,10 +132,10 @@ namespace Mobile.Services
                 //menambahkan filter status
                 if (request.Status > 0)
                 {
-                    // Convert new status codes to database values
-                    int dbStatus = request.Status - 1; // 1->0 (Pending), 2->1 (Approved), 3->2 (Rejected)
+                    // Langsung menggunakan nilai status dari API
+                    // 1 = Pending, 2 = Approved, 3 = Rejected
                     whereClause += " AND l.status = @Status";
-                    parameters.Add("Status", dbStatus);
+                    parameters.Add("Status", request.Status);
                 }
                 else if (request.Status == 0)
                 {
@@ -177,9 +177,9 @@ namespace Mobile.Services
                         l.durasi as Durasi,
                         l.alasan as Alasan,
                         CASE
-                            WHEN l.status = 0 THEN 'Pending'
-                            WHEN l.status = 1 THEN 'Approved'
-                            WHEN l.status = 2 THEN 'Rejected'
+                            WHEN l.status = 1 THEN 'Pending'
+                            WHEN l.status = 2 THEN 'Approved'
+                            WHEN l.status = 3 THEN 'Rejected'
                             ELSE 'Unknown'
                         END as Status,
                         l.date_created as DateCreated,
