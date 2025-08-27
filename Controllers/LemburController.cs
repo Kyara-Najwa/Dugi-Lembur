@@ -29,7 +29,7 @@ namespace Mobile.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var lembur = await _lemburService.GetById(id);
+            var lembur = await _lemburService.GetLemburWithEmployeeDetails(id); //untuk dapatin detail employee
             if (lembur == null)
             {
                 return NotFound();
