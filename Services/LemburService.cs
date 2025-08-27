@@ -40,6 +40,33 @@ namespace Mobile.Services
             }
         }
 
+        public async Task<LemburDetailResponse> GetLemburWithEmployeeDetails(int id) //untuk dapetin lembur beserta detail employee
+        {
+            using (IDbConnection conn = Connection)
+            {
+                string query = @"
+                    SELECT 
+                        l.*,
+                        e.companyid AS CompanyId,
+                        e.officeid AS OfficeId,
+                        e.nik AS Nik,
+                        e.fullname AS FullName,
+                        e.position AS Position,
+                        e.phonenumber AS PhoneNumber,
+                        d.name AS Division
+                    FROM 
+                        lembur l
+                    JOIN 
+                        employee e ON l.employee_id = e.id
+                    LEFT JOIN 
+                        division d ON e.divisionid = d.id
+                    WHERE 
+                        l.id = @Id AND e.IsDeleted = false";
+
+                return await conn.QueryFirstOrDefaultAsync<LemburDetailResponse>(query, new { Id = id });
+            } 
+        }
+
         //untuk buat lembur baru
         public async Task<int> Create(Lembur lembur)
         {
