@@ -46,7 +46,18 @@ namespace Mobile.Services
             {
                 string query = @"
                     SELECT 
-                        l.*,
+                        l.id,
+                        l.employee_id AS EmployeeId,
+                        l.tanggal_lembur AS TanggalLembur,
+                        l.durasi::numeric AS Durasi,
+                        l.alasan,
+                        l.status,
+                        l.approved_by AS ApprovedBy,
+                        l.approved_at AS ApprovedAt,
+                        l.rejected_by AS RejectedBy,
+                        l.rejected_at AS RejectedAt,
+                        l.reject_reason AS RejectReason,
+                        l.date_created AS DateCreated,
                         e.companyid AS CompanyId,
                         e.officeid AS OfficeId,
                         e.nik AS Nik,
