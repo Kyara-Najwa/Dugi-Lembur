@@ -24,4 +24,5 @@ ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
 # Jalankan aplikasi
-ENTRYPOINT ["dotnet", "Dugi-lembur.dll"]
+ENTRYPOINT ["dotnet", "Mobile.dll"]
+
